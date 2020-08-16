@@ -1,4 +1,4 @@
-obj-m += memo_grupo14.o
+obj-m += mem_grupo14.o
 obj-m += cpu_grupo14.o
 
 all:
