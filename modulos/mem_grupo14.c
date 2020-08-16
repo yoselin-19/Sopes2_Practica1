@@ -37,8 +37,8 @@ static int escribiendoArchivo(struct seq_file *mifile, void *v){
     seq_printf(mifile, "- Ruben Osorio    - 201403703  -\n");
     seq_printf(mifile, "- Memoria Total: %lu MB        -\n", memoria_total / 1024);
     seq_printf(mifile, "- Memoria Libre: %lu MB        -\n", memoria_libre / 1024);
-    seq_printf(mifile, "- Memoria Consumida: %lu MB        -\n", memoria_consumida / 1024);
-    seq_printf(mifile, "- Memoria en Uso: %i %%        -\n", (memoria_libre * 100)/memoria_total);
+    seq_printf(mifile, "- Memoria Consumida: %lu MB    -\n", memoria_consumida / 1024);
+    seq_printf(mifile, "- Memoria en Uso: %lu %%        -\n", (memoria_libre * 100)/memoria_total);
     seq_printf(mifile, "--------------------------------\n");
     return 0;
 }
