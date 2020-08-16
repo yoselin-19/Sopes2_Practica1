@@ -41,7 +41,7 @@ static int escribiendoArchivo(struct seq_file *mifile, void *v)
             task_child = list_entry(list, struct task_struct, sibling);
             seq_printf(mifile, "PID: %d, NOMBRE: %s, ESTADO: %ld\n", task_child->pid, task_child->comm, task_child->state);
         }
-        seq_printf(mifile, "********************************\n");
+        seq_printf(mifile, "********************************\n\n");
     }
     return 0;
 }

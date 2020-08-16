@@ -4,7 +4,6 @@
 #include <linux/list.h>
 #include <linux/types.h>
 #include <linux/slab.h>
-#include <linux/string.h>
 #include <linux/sched.h>
 #include <linux/string.h>
 #include <linux/fs.h>
@@ -12,7 +11,6 @@
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h> 
 #include <linux/hugetlb.h>
-
 
 #define modulo_memoria "mem_grupo14"
 
@@ -26,10 +24,10 @@ MODULE_DESCRIPTION("Modulo con descripción de la memoria RAM");
 
 static int escribiendoArchivo(struct seq_file *mifile, void *v){
     #define S(x) ((x) << (PAGE_SHIFT -10))
-    si_meminfo(&i);
-    seq_printf(m, "Memoria total: %lu MB\n",S(i.totalram/1024));
-    seq_printf(m, "Memoria libre: %lu MB\n",S(i.freeram/1024));
-    seq_printf(m, "Memoria utilizada: %lu %%\n",S((i.freeram)*100)/S(i.totalram));        
+    si_meminfo(&informacion);
+    seq_printf(mifile, "Memoria total: %lu MB\n",S(informacion.totalram/1024));
+    seq_printf(mifile, "Memoria consumida: %lu MB\n",S(informacion.totalram/1024) - S(informacion.freeram/1024));
+    seq_printf(mifile, "Memoria utilizada: %lu %%\n",S((informacion.freeram)*100)/S(informacion.totalram));        
     return 0;
 }
 
@@ -47,14 +45,14 @@ static struct proc_ops operacionesDeArchivo={
 static int iniciandoModulo(void)
 {
     proc_create(modulo_memoria, 0, NULL, &operacionesDeArchivo);
-    printk(KERN_INFO "Hola mundo, somos el grupo 14 y este es el monitor de memoria");
+    printk(KERN_INFO "Hola mundo, somos el grupo 14 y este es el monitor de memoria\n");
     return 0;
 }
 
 static void finalizandoModulo(void)
 {
     remove_proc_entry(modulo_memoria, NULL);
-    printk(KERN_INFO "Sayonara mundo, somos el grupo 14 y este fue el monitor de memoria");
+    printk(KERN_INFO "Sayonara mundo, somos el grupo 14 y este fue el monitor de memoria\n");
 }
 
 
