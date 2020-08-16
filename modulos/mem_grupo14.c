@@ -14,7 +14,7 @@
 #include <linux/hugetlb.h>
 
 
-#define modulo_memoria "memo_201403819_201403862"
+#define modulo_memoria "mem_grupo14"
 
 struct sysinfo informacion;
 
