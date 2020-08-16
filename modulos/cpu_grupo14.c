@@ -4,14 +4,13 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
-#include <linux/string  .h>
+#include <linux/string.h>
 #include <linux/fs.h>
 #include <linux/seq_file.h>
 #include <linux/proc_fs.h>
 #include <asm/uaccess.h> 
 #include <linux/hugetlb.h>
 #include <linux/sched/signal.h>
-
 
 #define modulo_cpu "cpu_grupo14"
 
@@ -23,7 +22,6 @@ struct list_head *list;
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Yoselin Lemus 201403819 - Brandon Alvarez 201403862 - Ruben Osorio 201403703");
 MODULE_DESCRIPTION("Modulo con descripción del CPU");
-
 
 static int escribiendoArchivo(struct seq_file *mifile, void *v)
 {
@@ -54,21 +52,11 @@ static int alAbrirArchivo(struct inode *inodo, struct file *mifile)
     return single_open(mifile, escribiendoArchivo, NULL);
 }
 
-// static struct file_operations operacionesDeArchivo =
-// {
-//     .owner = THIS_MODULE,   
-//     .open = alAbrirArchivo,
-//     .read = seq_read,
-//     .llseek = seq_lseek,
-//     .release = single_release,
-// };
-
 static struct proc_ops operacionesDeArchivo={
     .proc_open = alAbrirArchivo,
     .proc_release = single_release,
     .proc_read = seq_read,
     .proc_lseek = seq_lseek,
-    .proc_write = escribiendoArchivo,
 };
 
 

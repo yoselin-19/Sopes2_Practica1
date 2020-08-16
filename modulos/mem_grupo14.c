@@ -43,25 +43,15 @@ static int escribiendoArchivo(struct seq_file *mifile, void *v){
     return 0;
 }
 
-static int alAbrirArchivo(struct inode *inodo, struct file, *mifile){
+static int alAbrirArchivo(struct inode *inodo, struct file *mifile){
     return single_open(mifile, escribiendoArchivo, NULL);
 }
-
-// static struct file_operations operacionesDeArchivo =
-// {
-//     .owner = THIS_MODULE,
-//     .open = alAbrirArchivo,
-//     .read  = seq_read,
-//     .llseek = seq_lseek,
-//     .release = single_release,
-// };
 
 static struct proc_ops operacionesDeArchivo={
     .proc_open = alAbrirArchivo,
     .proc_release = single_release,
     .proc_read = seq_read,
     .proc_lseek = seq_lseek,
-    .proc_write = escribiendoArchivo,
 };
 
 static int iniciandoModulo(void)
