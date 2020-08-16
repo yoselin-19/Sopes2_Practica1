@@ -25,21 +25,11 @@ MODULE_DESCRIPTION("Modulo con descripción de la memoria RAM");
 
 
 static int escribiendoArchivo(struct seq_file *mifile, void *v){
-    si_meminfo(&informacion);
-    long memoria_total = (informacion.totalram * 4);
-    long memoria_libre = (informacion.freeram * 4);
-    long memoria_consumida = memoria_total - memoria_libre;
-
-    seq_printf(mifile, "--------------------------------\n");
-    seq_printf(mifile, "- Integrantes:                 -\n");
-    seq_printf(mifile, "- Yoselin Lemus   - 201403819  -\n");
-    seq_printf(mifile, "- Brandon Alvarez - 201403862  -\n");
-    seq_printf(mifile, "- Ruben Osorio    - 201403703  -\n");
-    seq_printf(mifile, "- Memoria Total: %lu MB        -\n", memoria_total / 1024);
-    seq_printf(mifile, "- Memoria Libre: %lu MB        -\n", memoria_libre / 1024);
-    seq_printf(mifile, "- Memoria Consumida: %lu MB    -\n", memoria_consumida / 1024);
-    seq_printf(mifile, "- Memoria en Uso: %lu %%        -\n", (memoria_libre * 100)/memoria_total);
-    seq_printf(mifile, "--------------------------------\n");
+    #define S(x) ((x) << (PAGE_SHIFT -10))
+    si_meminfo(&i);
+    seq_printf(m, "Memoria total: %lu MB\n",S(i.totalram/1024));
+    seq_printf(m, "Memoria libre: %lu MB\n",S(i.freeram/1024));
+    seq_printf(m, "Memoria utilizada: %lu %%\n",S((i.freeram)*100)/S(i.totalram));        
     return 0;
 }
 
