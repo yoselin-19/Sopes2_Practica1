@@ -25,9 +25,14 @@ MODULE_DESCRIPTION("Modulo con descripción de la memoria RAM");
 static int escribiendoArchivo(struct seq_file *mifile, void *v){
     #define S(x) ((x) << (PAGE_SHIFT -10))
     si_meminfo(&informacion);
-    seq_printf(mifile, "Memoria total: %lu MB\n",S(informacion.totalram/1024));
-    seq_printf(mifile, "Memoria consumida: %lu MB\n",S(informacion.totalram/1024) - S(informacion.freeram/1024));
-    seq_printf(mifile, "Memoria utilizada: %lu %%\n",S((informacion.freeram)*100)/S(informacion.totalram));        
+    seq_printf(mifile, "{\n");
+    seq_printf(mifile, "    \"memoria_total_mb\" : %lu,\n", S(informacion.totalram/1024));
+    seq_printf(mifile, "    \"memoria_consumida_mb\" : %lu,\n", S(informacion.totalram/1024) - S(informacion.freeram/1024));
+    seq_printf(mifile, "    \"memoria_utilizada_porcentaje\" : %lu\n}", 100 - S((informacion.freeram)*100)/S(informacion.totalram));
+
+    //seq_printf(mifile, "Memoria total: %lu MB\n",S(informacion.totalram/1024));
+    //seq_printf(mifile, "Memoria consumida: %lu MB\n",S(informacion.totalram/1024) - S(informacion.freeram/1024));
+    //seq_printf(mifile, "Memoria utilizada: %lu %%\n",S((informacion.freeram)*100)/S(informacion.totalram));        
     return 0;
 }
 

@@ -1,0 +1,35 @@
+{
+    "cpu" : [
+        {
+            "pid" : 5,
+            "nombre" : "kworker/0:0",
+            "estado" : 1026,
+            "hijos" : [
+            ]
+        },
+        {
+            "pid" : 6,
+            "nombre" : "kworker/0:0H",
+            "estado" : 1026,
+            "hijos" : [
+            ]
+        },
+        {
+            "pid" : 772,
+            "nombre" : "gdm3",
+            "estado" : 1,
+            "hijos" : [
+                {
+                    "pid" : 792,
+                    "nombre" : "gdm-session-wor",
+                    "estado" : 1
+                },
+                {
+                    "pid" : 1132,
+                    "nombre" : "gdm-session-wor",
+                    "estado" : 1
+                }
+            ]
+        }
+    ]
+}

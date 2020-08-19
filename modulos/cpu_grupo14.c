@@ -23,26 +23,56 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Yoselin Lemus 201403819 - Brandon Alvarez 201403862 - Ruben Osorio 201403703");
 MODULE_DESCRIPTION("Modulo con descripción del CPU");
 
+int contadorPadre = 1;
+int contadorHijos = 1;
+
 static int escribiendoArchivo(struct seq_file *mifile, void *v)
 {
-    seq_printf(mifile, "--------------------------------\n");
-    seq_printf(mifile, "- Integrantes:                 -\n");
-    seq_printf(mifile, "- Yoselin Lemus   - 201403819  -\n");
-    seq_printf(mifile, "- Brandon Alvarez - 201403862  -\n");
-    seq_printf(mifile, "- Ruben Osorio -    201403703  -\n");
-    seq_printf(mifile, "--------------------------------\n");
+    seq_printf(mifile, "{\n");
+    seq_printf(mifile, "    \"cpu\" : [\n");
+    contadorPadre = 1;
     for_each_process(task)
     {
-        seq_printf(mifile, "************* PROCESO PADRE ************\n");
-        seq_printf(mifile, "PID: %d, NOMBRE: %s, ESTADO: %ld\n", task->pid, task->comm, task->state);
-        seq_printf(mifile, "************* PROCESOS HIJOS ************\n");
+        if(contadorPadre == 1){
+            seq_printf(mifile, "        {\n");
+        }
+        else{
+            seq_printf(mifile, ",\n");
+            seq_printf(mifile, "        {\n");
+        }
+        seq_printf(mifile, "        \"pid\" : %d,\n", task->pid);
+        seq_printf(mifile, "        \"nombre\" : \"%s\",\n", task->comm);
+        seq_printf(mifile, "        \"estado\" : %ld,\n", task->state);
+        seq_printf(mifile, "        \"hijos\" : [\n");
+
+        contadorHijos = 1;
+
         list_for_each(list, &task->children)
         {
             task_child = list_entry(list, struct task_struct, sibling);
-            seq_printf(mifile, "PID: %d, NOMBRE: %s, ESTADO: %ld\n", task_child->pid, task_child->comm, task_child->state);
+
+            if(contadorHijos == 1){
+                seq_printf(mifile, "                    {\n");
+            }
+            else{
+                seq_printf(mifile, ",\n");
+                seq_printf(mifile, "                {\n");
+            }            
+            seq_printf(mifile, "                    \"pid\" : %d,\n", task_child->pid);
+            seq_printf(mifile, "                    \"nombre\" : \"%s\",\n", task_child->comm);
+            seq_printf(mifile, "                    \"estado\" : %ld\n", task_child->state);
+            seq_printf(mifile, "                }");
+            contadorHijos++;
         }
-        seq_printf(mifile, "********************************\n\n");
+        seq_printf(mifile, "\n");
+        seq_printf(mifile, "            ]\n");
+        seq_printf(mifile, "        }");
+
+        contadorPadre++;
     }
+    seq_printf(mifile, "\n");
+    seq_printf(mifile, "    ]\n");
+    seq_printf(mifile, "}");
     return 0;
 }
 
