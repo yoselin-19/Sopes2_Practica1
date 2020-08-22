@@ -11,10 +11,6 @@ echo ">> GinGonic"
 
 go get -u github.com/gin-gonic/gin
 
-echo ">> SSH"
-go get -u golang.org/x/crypto/ssh
-
-
 
 echo ">> Construyendo aplicacion"
 go build -o ___go_build_so_p_02_ .

@@ -6,25 +6,56 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
-func getLinuxProcesses() (response string) {
-	file, err := os.Open("/proc/cpu_grupo14")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	fileContentBytes, err := ioutil.ReadAll(file)
+func getNumericFileInfos() []os.FileInfo {
+	files, err := ioutil.ReadDir("/proc")
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fileContent := fmt.Sprintf("%s", fileContentBytes)
-	fmt.Printf("lista de procesos: %s \n", fileContent)
-	return fileContent
+	var numberProcs []os.FileInfo
+
+	for _, f := range files {
+		_, err := strconv.Atoi(f.Name())
+		if err == nil {
+			numberProcs = append(numberProcs, f)
+		}
+	}
+
+	return numberProcs
 }
 
-/*
+func getLinuxProcesses() []map[string]interface{} {
+	var linuxProcesses []map[string]interface{}
+
+	numericFileInfos := getNumericFileInfos()
+
+	for _, f := range numericFileInfos {
+
+		file, err := os.Open("/proc/cpu_grupo14")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
+		fileContentBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fileContent := fmt.Sprintf("%s", fileContentBytes)
+
+		processInfo := extractLinuxProcessInfo(f.Name(), fileContent)
+
+		linuxProcesses = append(linuxProcesses, processInfo)
+	}
+
+	return linuxProcesses
+}
+
 func extractLinuxProcessInfo(pid string, content string) map[string]interface{} {
 	processInfo := make(map[string]interface{})
 
@@ -64,6 +95,7 @@ func extractLinuxProcessInfo(pid string, content string) map[string]interface{} 
 	return processInfo
 }
 
+/*
 func killProcess(pid int) error {
 	process, err := os.FindProcess(pid)
 	if err != nil {
