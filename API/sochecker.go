@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func getLinuxProcesses() string{} {
+func getLinuxProcesses() (response string) {
 	file, err := os.Open("/proc/cpu_grupo14")
 	if err != nil {
 		log.Fatal(err)
