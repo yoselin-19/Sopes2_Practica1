@@ -73,9 +73,9 @@ func extractLinuxProcessInfo(pid string, content string) map[string]interface{} 
 			saveChars = true
 		}
 		if c == '\n' {
-
+			fmt.Println(line)
 			switch line {
-			case 0:
+			case 1:
 				processInfo["nombre"] = strings.TrimSpace(value)
 				break
 			case 2:
