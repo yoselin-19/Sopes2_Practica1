@@ -6,13 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
-	"syscall"
 )
-
-func getNumericFileInfos() []os.FileInfo {
-
-}
 
 func getLinuxProcesses() []map[string]interface{} {
 	file, err := os.Open("/proc/cpu_grupo14")
@@ -27,8 +21,10 @@ func getLinuxProcesses() []map[string]interface{} {
 
 	fileContent := fmt.Sprintf("%s", fileContentBytes)
 	fmt.Printf("lista de procesos: %s \n", fileContent)
+	return fileContent
 }
 
+/*
 func extractLinuxProcessInfo(pid string, content string) map[string]interface{} {
 	processInfo := make(map[string]interface{})
 
@@ -107,6 +103,7 @@ func getRAMUsage() (int, int) {
   5. subtract the previous fraction from 1.0 to get the time spent being   not   idle
   6. multiple by   100   to get a percentage
 */
+
 func extractCpuUsageFromStatFileContent(content string) (int, int) {
 	numbers := extractNumbersFromLine(content, 0)
 	var total = 0
