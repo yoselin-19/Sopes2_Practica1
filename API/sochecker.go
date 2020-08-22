@@ -76,10 +76,10 @@ func extractLinuxProcessInfo(pid string, content string) map[string]interface{} 
 
 			switch line {
 			case 0:
-				processInfo["name"] = strings.TrimSpace(value)
+				processInfo["nombre"] = strings.TrimSpace(value)
 				break
 			case 2:
-				processInfo["state"] = strings.TrimSpace(value)
+				processInfo["estado"] = strings.TrimSpace(value)
 				break
 			case 8:
 				processInfo["uid"] = strings.TrimSpace(value)
