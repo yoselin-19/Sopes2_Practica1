@@ -9,7 +9,7 @@ go version
 echo ">> Obteniendo librerias necesarias"
 echo ">> GinGonic"
 
-go get -u github.com/gin-gonic/gin
+go get -u github.com/gorilla/mux
 
 
 echo ">> Construyendo aplicacion"
