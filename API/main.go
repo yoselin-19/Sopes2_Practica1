@@ -16,7 +16,7 @@ import (
 	"encoding/json"
 
 	//Para conversiones
-	"sort"
+
 	"strconv"
 
 	//Para hacer el api rest
@@ -157,52 +157,54 @@ func kill_proceso(w http.ResponseWriter, r *http.Request) {
 }
 
 func arbol_procesos(w http.ResponseWriter, r *http.Request) {
-	//Obteniendo lista de directorios
+	/*
+		//Obteniendo lista de directorios
 
-	//Variables para crear el arreglo de Arbol de procesos
-	var raiz librerias.Arbol
-	var arreglo []librerias.Arbol
+		//Variables para crear el arreglo de Arbol de procesos
+		var raiz librerias.Arbol
+		var arreglo []librerias.Arbol
 
-	//Recorriendo cada directorio
-	for _, dir := range lista_directorios {
-		informacion := librerias.Lectura_archivo(dir, 2)
+		//Recorriendo cada directorio
+		for _, dir := range lista_directorios {
+			informacion := librerias.Lectura_archivo(dir, 2)
 
-		//Obteniendo cada atributo
-		Pid_ := strings.Split(informacion[0], ":")[1]
-		PidNum, _ := strconv.Atoi(strings.Replace(Pid_, "\t", "", -1))
+			//Obteniendo cada atributo
+			Pid_ := strings.Split(informacion[0], ":")[1]
+			PidNum, _ := strconv.Atoi(strings.Replace(Pid_, "\t", "", -1))
 
-		Nombre_ := strings.Split(informacion[1], ":")[1]
-		Nombre_ = strings.Replace(Nombre_, "\t", "", -1)
+			Nombre_ := strings.Split(informacion[1], ":")[1]
+			Nombre_ = strings.Replace(Nombre_, "\t", "", -1)
 
-		Ppid_ := strings.Split(informacion[4], ":")[1]
-		PpidNum, _ := strconv.Atoi(strings.Replace(Ppid_, "\t", "", -1))
+			Ppid_ := strings.Split(informacion[4], ":")[1]
+			PpidNum, _ := strconv.Atoi(strings.Replace(Ppid_, "\t", "", -1))
 
-		raiz = librerias.Arbol{
-			Pid:    PidNum,
-			Nombre: Nombre_,
-			Ppid:   PpidNum,
-			Hijos:  nil,
+			raiz = librerias.Arbol{
+				Pid:    PidNum,
+				Nombre: Nombre_,
+				Ppid:   PpidNum,
+				Hijos:  nil,
+			}
+
+			arreglo = append(arreglo, raiz)
 		}
 
-		arreglo = append(arreglo, raiz)
-	}
+		// Sort by age, keeping original order or equal elements.
+		sort.SliceStable(arreglo, func(i, j int) bool {
+			return arreglo[i].Ppid < arreglo[j].Ppid
+		})
 
-	// Sort by age, keeping original order or equal elements.
-	sort.SliceStable(arreglo, func(i, j int) bool {
-		return arreglo[i].Ppid < arreglo[j].Ppid
-	})
+		//Construir texto de arbol
+		var nuevoB librerias.Arbol
+		for _, item := range arreglo {
+			librerias.Insertar(&nuevoB, item)
+		}
 
-	//Construir texto de arbol
-	var nuevoB librerias.Arbol
-	for _, item := range arreglo {
-		librerias.Insertar(&nuevoB, item)
-	}
+		TextoArbol := librerias.GetTextoArbol(nuevoB)
+		info_tree := Tree{Arbol: TextoArbol}
 
-	TextoArbol := librerias.GetTextoArbol(nuevoB)
-	info_tree := Tree{Arbol: TextoArbol}
-
-	JSON_Data, _ := json.Marshal(info_tree)
-	w.Write(JSON_Data)
+		JSON_Data, _ := json.Marshal(info_tree)
+		w.Write(JSON_Data)
+	*/
 }
 
 //=======================================================================
