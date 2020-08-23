@@ -93,8 +93,16 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	var arr_process []PROCESS
 
 	//Obteniendo lista de directorios
-	lista_directorios := librerias.Get_directorios("/proc/cpu_grupo14")
-
+	var procesos []PROCESS
+	dat, err := ioutil.ReadFile("/proc/cpu_grupo14")
+	if err != nil {
+		panic(err)
+	}
+	//
+	json.Unmarshal([]byte(dat), &procesos)
+	fmt.Printf("Procesos : %+v", procesos)
+	os.Exit(1)
+	lista_directorios := librerias.Get_directorios("/proc")
 	//Recorriendo cada directorio
 	for _, dir := range lista_directorios {
 		informacion := librerias.Lectura_archivo(dir, 2)
@@ -150,12 +158,7 @@ func kill_proceso(w http.ResponseWriter, r *http.Request) {
 
 func arbol_procesos(w http.ResponseWriter, r *http.Request) {
 	//Obteniendo lista de directorios
-	var procesos PROCESS
-	dat, err := ioutil.ReadFile("/proc/cpu_grupo14")
-	lista_directorios := librerias.Get_directorios("/proc")
-	json.Unmarshal([]byte(dat), &procesos)
-	fmt.Printf("Nombre: %s, Estado: %s", procesos.Nombre, procesos.Estado)
-	os.Exit(1)
+
 	//Variables para crear el arreglo de Arbol de procesos
 	var raiz librerias.Arbol
 	var arreglo []librerias.Arbol
@@ -212,10 +215,10 @@ type RAM struct {
 }
 
 type PROCESS struct {
-	PID           string
-	Nombre        string
+	PID           string `json:"pid"`
+	Nombre        string `json:"nombre"`
 	Usuario       string
-	Estado        string
+	Estado        string `json:"estado"`
 	PorcentajeRAM string
 	Proceso_padre string
 }
