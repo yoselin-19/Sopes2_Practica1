@@ -154,7 +154,7 @@ func arbol_procesos(w http.ResponseWriter, r *http.Request) {
 	dat, err := ioutil.ReadFile("/proc/cpu_grupo14")
 	lista_directorios := librerias.Get_directorios("/proc")
 	json.Unmarshal([]byte(dat), &procesos)
-	fmt.Printf("Species: %s, Description: %s", bird.Species, bird.Description)
+	fmt.Printf("Nombre: %s, Estado: %s", procesos.Nombre, procesos.Estado)
 	os.Exit(1)
 	//Variables para crear el arreglo de Arbol de procesos
 	var raiz librerias.Arbol
