@@ -14,7 +14,7 @@ import (
 
 	//Para usar json
 	"encoding/json"
-
+	"github.com/tidwall/gjson"
 	//Para conversiones
 
 	"strconv"
@@ -90,19 +90,33 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 }
 
 func lista_procesos(w http.ResponseWriter, r *http.Request) {
-	var arr_process []PROCESS
-
+//	var arr_process []PROCESS
+//	var cpu CPU
 	//Obteniendo lista de directorios
-	var procesos []PROCESS
-	dat, err := ioutil.ReadFile("/proc/cpu_grupo14")
+//	var procesos []PROCESS
+	data, err := ioutil.ReadFile("/proc/cpu_grupo14")
 	if err != nil {
 		panic(err)
 	}
 	//
-	json.Unmarshal([]byte(dat), &procesos)
-	fmt.Printf("Procesos : %+v", procesos)
+	//fmt.Printf(string(dat))
+	procesos := gjson.Get(data, "cpu")
+	for _, proceso := range procesos.Array() {
+
+		Pid_ := gjson.Get(proceso.String(), "pid")
+                Pid_ = Pid_.String()
+
+	        Nombre_ := gjson.Get(proceso.String(), "nombre")
+                Nombre_ =  Nombre_.String()
+
+		Usuario_ := gjon.Get(proceso.String(), "
+                Usuario_ = strings.Replace(Usuario_, "\t", " ", -1)
+                Usuario_ = strings.Split(Usuario_, " ")[1] //En la posicion 0 hay un espacio en blanco " "
+ 
+
+	}
 	os.Exit(1)
-	lista_directorios := librerias.Get_directorios("/proc")
+/*	lista_directorios := librerias.Get_directorios("/proc")
 	//Recorriendo cada directorio
 	for _, dir := range lista_directorios {
 		informacion := librerias.Lectura_archivo(dir, 2)
@@ -147,7 +161,7 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	JSON_Data, _ := json.Marshal(info_general)
-	w.Write(JSON_Data)
+	w.Write(JSON_Data)*/
 }
 
 func kill_proceso(w http.ResponseWriter, r *http.Request) {
@@ -223,6 +237,7 @@ type PROCESS struct {
 	Estado        string `json:"estado"`
 	PorcentajeRAM string
 	Proceso_padre string
+	hijos         []PROCESS `json:"hijos"`
 }
 
 type Info_general struct {
@@ -236,4 +251,8 @@ type Info_general struct {
 
 type Tree struct {
 	Arbol string
+}
+
+type CPU struct {
+	procesos []PROCESS 
 }
