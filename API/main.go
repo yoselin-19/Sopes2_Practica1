@@ -91,7 +91,7 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	var arr_process []PROCESS
 
 	//Obteniendo lista de directorios
-	lista_directorios := librerias.Get_directorios("/proc")
+	lista_directorios := librerias.Get_directorios("/proc/cpu_grupo14")
 
 	//Recorriendo cada directorio
 	for _, dir := range lista_directorios {
