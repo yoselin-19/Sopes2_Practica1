@@ -2,6 +2,7 @@
     "cpu" : [
         {
             "pid" : 5,
+	    "uid" : 1000,
             "nombre" : "kworker/0:0",
             "estado" : 1026,
             "hijos" : [
@@ -9,6 +10,7 @@
         },
         {
             "pid" : 6,
+            "uid" : 1000,
             "nombre" : "kworker/0:0H",
             "estado" : 1026,
             "hijos" : [
@@ -16,6 +18,7 @@
         },
         {
             "pid" : 772,
+            "uid" : 1000,
             "nombre" : "gdm3",
             "estado" : 1,
             "hijos" : [
