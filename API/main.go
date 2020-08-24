@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sort"
+	"strconv"
 
 	//Para lectura de los archivos
 	"strings"
@@ -17,8 +19,6 @@ import (
 	"github.com/tidwall/gjson"
 
 	//Para conversiones
-
-	"strconv"
 
 	//Para hacer el api rest
 	"github.com/gorilla/mux"
@@ -57,28 +57,21 @@ func main() {
 }
 
 func memoria_proceso(w http.ResponseWriter, r *http.Request) {
-	informacion := librerias.Lectura_archivo("/proc/meminfo", 1)
-	MemTotal := informacion[0]
-	MemFree := informacion[1]
+	data, err := ioutil.ReadFile("/proc/mem_grupo14")
+	if err != nil {
+		panic(err)
+	}
 
-	//Haciendo Reemplazos para obtener los datos
-	MemTotal = strings.Replace(MemTotal, "MemTotal:", "", -1)
-	MemTotal = strings.Replace(MemTotal, " ", "", -1)
-	MemTotal = strings.Replace(MemTotal, "kB", "", -1)
-
-	MemFree = strings.Replace(MemFree, "MemFree:", "", -1)
-	MemFree = strings.Replace(MemFree, " ", "", -1)
-	MemFree = strings.Replace(MemFree, "kB", "", -1)
-
+	memoria_total := gjson.Get(string(data), "memoria_total_mb")
+	memoria_utilizada := gjson.Get(string(data), "memoria_utilizada_porcentaje")
+	memoria_consumida := gjson.Get(string(data), "memoria_consumida_mb")
 	//Conversiones y calculos
-	MemTotal_, _ := strconv.Atoi(MemTotal)
-	MemTotal_ = MemTotal_ / 1000
+	MemTotal_, _ := strconv.Atoi(memoria_total.String())
 
-	MemFree_, _ := strconv.Atoi(MemFree)
-	MemFree_ = MemFree_ / 1000
+	MemConsumida, _ := strconv.Atoi(memoria_consumida.String())
 
-	MemConsumida := MemTotal_ - MemFree_
-	PorcentajeConsumo := (float32(MemConsumida) / float32(MemTotal_)) * 100
+	numero_porcentaje, _ := strconv.Atoi(memoria_utilizada.String())
+	PorcentajeConsumo := float32(numero_porcentaje)
 
 	info_ram := RAM{
 		Total_Ram_Servidor:     MemTotal_,
@@ -88,6 +81,7 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 
 	JSON_Data, _ := json.Marshal(info_ram)
 	w.Write(JSON_Data)
+
 }
 
 func lista_procesos(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +90,8 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	arr_process = readProcesos(string(data), "0", arr_process)
+	procesos := gjson.Get(string(data), "cpu")
+	arr_process = readProcesos(procesos, "0", arr_process)
 
 	//Agregando informacion general
 	info_general := Info_general{
@@ -112,9 +107,8 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	w.Write(JSON_Data)
 }
 
-func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
+func readProcesos(procesos gjson.Result, padre string, arr_process []PROCESS) []PROCESS {
 
-	procesos := gjson.Get(data, "cpu")
 	for _, proceso := range procesos.Array() {
 
 		Pid_ := gjson.Get(proceso.String(), "pid")
@@ -128,7 +122,7 @@ func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 		hijos := gjson.Get(proceso.String(), "hijos")
 
 		if strings.Contains(hijos.String(), "{") {
-			arr_process = readProcesos(hijos.String(), Pid_.String(), arr_process)
+			arr_process = readProcesos(hijos, Pid_.String(), arr_process)
 		}
 
 		info_process := PROCESS{
@@ -145,6 +139,34 @@ func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 	return arr_process
 }
 
+func armarProcesos(procesos gjson.Result, padre string, arr_process []librerias.Arbol, raiz librerias.Arbol) []librerias.Arbol {
+
+	for _, proceso := range procesos.Array() {
+
+		Pid_ := gjson.Get(proceso.String(), "pid")
+		PidNum, _ := strconv.Atoi(Pid_.String())
+		Nombre_ := gjson.Get(proceso.String(), "nombre")
+
+		hijos := gjson.Get(proceso.String(), "hijos")
+
+		if strings.Contains(hijos.String(), "{") {
+			arr_process = armarProcesos(hijos, Pid_.String(), arr_process, raiz)
+		}
+
+		numero_padre, _ := strconv.Atoi(padre)
+
+		raiz = librerias.Arbol{
+			Pid:    PidNum,
+			Nombre: Nombre_.String(),
+			Ppid:   numero_padre,
+			Hijos:  nil,
+		}
+		arr_process = append(arr_process, raiz)
+
+	}
+	return arr_process
+}
+
 func kill_proceso(w http.ResponseWriter, r *http.Request) {
 	key := mux.Vars(r)["id"]
 	librerias.MatarProceso(key)
@@ -152,54 +174,38 @@ func kill_proceso(w http.ResponseWriter, r *http.Request) {
 }
 
 func arbol_procesos(w http.ResponseWriter, r *http.Request) {
-	/*
-		//Obteniendo lista de directorios
 
-		//Variables para crear el arreglo de Arbol de procesos
-		var raiz librerias.Arbol
-		var arreglo []librerias.Arbol
+	//Obteniendo lista de directorios
+	data, err := ioutil.ReadFile("/proc/cpu_grupo14")
+	if err != nil {
+		panic(err)
+	}
+	//Variables para crear el arreglo de Arbol de procesos
+	var raiz librerias.Arbol
+	var arreglo []librerias.Arbol
 
-		//Recorriendo cada directorio
-		for _, dir := range lista_directorios {
-			informacion := librerias.Lectura_archivo(dir, 2)
+	//Recorriendo cada directorio
+	procesos := gjson.Get(string(data), "cpu")
 
-			//Obteniendo cada atributo
-			Pid_ := strings.Split(informacion[0], ":")[1]
-			PidNum, _ := strconv.Atoi(strings.Replace(Pid_, "\t", "", -1))
+	arreglo = armarProcesos(procesos, "0", arreglo, raiz)
 
-			Nombre_ := strings.Split(informacion[1], ":")[1]
-			Nombre_ = strings.Replace(Nombre_, "\t", "", -1)
+	// Sort by age, keeping original order or equal elements.
+	sort.SliceStable(arreglo, func(i, j int) bool {
+		return arreglo[i].Ppid < arreglo[j].Ppid
+	})
 
-			Ppid_ := strings.Split(informacion[4], ":")[1]
-			PpidNum, _ := strconv.Atoi(strings.Replace(Ppid_, "\t", "", -1))
+	//Construir texto de arbol
+	var nuevoB librerias.Arbol
+	for _, item := range arreglo {
+		librerias.Insertar(&nuevoB, item)
+	}
 
-			raiz = librerias.Arbol{
-				Pid:    PidNum,
-				Nombre: Nombre_,
-				Ppid:   PpidNum,
-				Hijos:  nil,
-			}
+	TextoArbol := librerias.GetTextoArbol(nuevoB)
+	info_tree := Tree{Arbol: TextoArbol}
 
-			arreglo = append(arreglo, raiz)
-		}
+	JSON_Data, _ := json.Marshal(info_tree)
+	w.Write(JSON_Data)
 
-		// Sort by age, keeping original order or equal elements.
-		sort.SliceStable(arreglo, func(i, j int) bool {
-			return arreglo[i].Ppid < arreglo[j].Ppid
-		})
-
-		//Construir texto de arbol
-		var nuevoB librerias.Arbol
-		for _, item := range arreglo {
-			librerias.Insertar(&nuevoB, item)
-		}
-
-		TextoArbol := librerias.GetTextoArbol(nuevoB)
-		info_tree := Tree{Arbol: TextoArbol}
-
-		JSON_Data, _ := json.Marshal(info_tree)
-		w.Write(JSON_Data)
-	*/
 }
 
 //=======================================================================

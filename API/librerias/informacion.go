@@ -130,7 +130,7 @@ func Insertar(raiz *Arbol, valor Arbol) {
 	if len(raiz.Hijos) == 0 {
 		if raiz.Pid == valor.Ppid {
 			raiz.Hijos = append(raiz.Hijos, valor)
-			// fmt.Println(raiz.Hijos)
+
 		}
 	} else {
 		if raiz.Pid == valor.Ppid {
@@ -138,7 +138,7 @@ func Insertar(raiz *Arbol, valor Arbol) {
 		} else {
 			for i := 0; i < len(raiz.Hijos); i++ {
 				Insertar(&raiz.Hijos[i], valor)
-				// fmt.Println(raiz.Hijos[i])
+
 			}
 		}
 	}
@@ -163,6 +163,7 @@ func GetTextoArbol(raiz Arbol) string {
 		}
 	}
 	texto = texto + "</ul>\n"
+
 	return texto
 }
 
