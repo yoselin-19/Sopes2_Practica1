@@ -158,7 +158,7 @@ func armarProcesos(data string, padre string, arr_process []librerias.Arbol, rai
 			arr_process = armarProcesos(hijos.String(), Pid_.String(), arr_process, raiz)
 		}
 
-		numero_padre, - :=  strconv.Atoi(padre)
+		numero_padre, _ := strconv.Atoi(padre)
 
 		raiz = librerias.Arbol{
 			Pid:    PidNum,
