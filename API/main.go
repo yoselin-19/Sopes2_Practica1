@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strconv"
 
 	//Para lectura de los archivos
@@ -66,11 +67,9 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 
 	//Conversiones y calculos
 	MemTotal_, _ := strconv.Atoi(memoria_total.String())
-	MemTotal_ = MemTotal_ / 1000
 
 	MemUtilizada, _ := strconv.Atoi(memoria_utilizada.String())
 	MemFree_ := MemTotal_ + MemUtilizada
-	MemFree_ = MemFree_ / 1000
 
 	MemConsumida := MemTotal_ - MemFree_
 	PorcentajeConsumo := (float32(MemConsumida) / float32(MemTotal_)) * 100
@@ -141,6 +140,37 @@ func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 	return arr_process
 }
 
+func armarProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
+
+	procesos := gjson.Get(data, "cpu")
+	for _, proceso := range procesos.Array() {
+
+		Pid_ := gjson.Get(proceso.String(), "pid")
+
+		Nombre_ := gjson.Get(proceso.String(), "nombre")
+
+		Estado_ := gjson.Get(proceso.String(), "estado")
+
+		Usuario_ := gjson.Get(proceso.String(), "usuario")
+
+		hijos := gjson.Get(proceso.String(), "hijos")
+
+		if strings.Contains(hijos.String(), "{") {
+			arr_process = readProcesos(hijos.String(), Pid_.String(), arr_process)
+		}
+
+		raiz = librerias.Arbol{
+			Pid:    PidNum,
+			Nombre: Nombre_,
+			Ppid:   PpidNum,
+			Hijos:  nil,
+		}
+		arr_process = append(arr_process, info_process)
+		arreglo = append(arreglo, raiz)
+	}
+	return arr_process
+}
+
 func kill_proceso(w http.ResponseWriter, r *http.Request) {
 	key := mux.Vars(r)["id"]
 	librerias.MatarProceso(key)
@@ -148,54 +178,36 @@ func kill_proceso(w http.ResponseWriter, r *http.Request) {
 }
 
 func arbol_procesos(w http.ResponseWriter, r *http.Request) {
-	/*
-		//Obteniendo lista de directorios
 
-		//Variables para crear el arreglo de Arbol de procesos
-		var raiz librerias.Arbol
-		var arreglo []librerias.Arbol
+	//Obteniendo lista de directorios
+	data, err := ioutil.ReadFile("/proc/cpu_grupo14")
+	if err != nil {
+		panic(err)
+	}
+	//Variables para crear el arreglo de Arbol de procesos
+	var raiz librerias.Arbol
+	var arreglo []librerias.Arbol
 
-		//Recorriendo cada directorio
-		for _, dir := range lista_directorios {
-			informacion := librerias.Lectura_archivo(dir, 2)
+	//Recorriendo cada directorio
+	arreglo = armarProcesos(string(data), "0", arreglo)
 
-			//Obteniendo cada atributo
-			Pid_ := strings.Split(informacion[0], ":")[1]
-			PidNum, _ := strconv.Atoi(strings.Replace(Pid_, "\t", "", -1))
+	// Sort by age, keeping original order or equal elements.
+	sort.SliceStable(arreglo, func(i, j int) bool {
+		return arreglo[i].Ppid < arreglo[j].Ppid
+	})
 
-			Nombre_ := strings.Split(informacion[1], ":")[1]
-			Nombre_ = strings.Replace(Nombre_, "\t", "", -1)
+	//Construir texto de arbol
+	var nuevoB librerias.Arbol
+	for _, item := range arreglo {
+		librerias.Insertar(&nuevoB, item)
+	}
 
-			Ppid_ := strings.Split(informacion[4], ":")[1]
-			PpidNum, _ := strconv.Atoi(strings.Replace(Ppid_, "\t", "", -1))
+	TextoArbol := librerias.GetTextoArbol(nuevoB)
+	info_tree := Tree{Arbol: TextoArbol}
 
-			raiz = librerias.Arbol{
-				Pid:    PidNum,
-				Nombre: Nombre_,
-				Ppid:   PpidNum,
-				Hijos:  nil,
-			}
+	JSON_Data, _ := json.Marshal(info_tree)
+	w.Write(JSON_Data)
 
-			arreglo = append(arreglo, raiz)
-		}
-
-		// Sort by age, keeping original order or equal elements.
-		sort.SliceStable(arreglo, func(i, j int) bool {
-			return arreglo[i].Ppid < arreglo[j].Ppid
-		})
-
-		//Construir texto de arbol
-		var nuevoB librerias.Arbol
-		for _, item := range arreglo {
-			librerias.Insertar(&nuevoB, item)
-		}
-
-		TextoArbol := librerias.GetTextoArbol(nuevoB)
-		info_tree := Tree{Arbol: TextoArbol}
-
-		JSON_Data, _ := json.Marshal(info_tree)
-		w.Write(JSON_Data)
-	*/
 }
 
 //=======================================================================
