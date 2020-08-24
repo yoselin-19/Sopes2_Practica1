@@ -1,9 +1,9 @@
 package librerias
 
 import (
-	"os"
 	"bufio"
 	"io/ioutil"
+	"os"
 
 	//Para conversiones
 	"strconv"
@@ -14,32 +14,32 @@ import (
 )
 
 //Variables a utilizar
-var NumeroRun, NumeroSleep, NumeroStop, NumeroZombie int
+var NumeroRun, NumeroSleep, NumeroStop, NumeroZombie, NumeroUninterruptible, NumeroInterruptible, NumeroSwapping int
 
 func Lectura_archivo(ruta string, tipo int) [5]string {
 	archivo, error := os.Open(ruta)
 	//TODO hacer lo que falta
 	//BUG mejorar algo
-	defer func(){
+	defer func() {
 		archivo.Close()
 		recover()
 	}()
-   
+
 	if error != nil {
 		panic(error)
 	}
-   
+
 	scanner := bufio.NewScanner(archivo)
 	var i int
 	var texto2 [5]string
 	//Itera cada linea
 	for scanner.Scan() {
-		if tipo == 1 && i ==2 {
+		if tipo == 1 && i == 2 {
 			break
 		}
-   		i++
-   		linea := scanner.Text()
-		if tipo == 1{
+		i++
+		linea := scanner.Text()
+		if tipo == 1 {
 			texto2[i-1] = linea
 		} else {
 			nombre_aux := strings.Split(linea, ":")
@@ -53,7 +53,7 @@ func Lectura_archivo(ruta string, tipo int) [5]string {
 				texto2[3] = linea
 			} else if nombre_aux[0] == "PPid" {
 				texto2[4] = linea
-			} 
+			}
 		}
 	}
 	return texto2
@@ -69,9 +69,9 @@ func Get_directorios(ruta string) []string {
 	for _, archivo := range files {
 		if archivo.IsDir() {
 			nombre := archivo.Name()
-			_,error := strconv.Atoi(nombre)
-			if error == nil{
-				texto = append(texto, ruta + "/" + nombre + "/status")
+			_, error := strconv.Atoi(nombre)
+			if error == nil {
+				texto = append(texto, ruta+"/"+nombre+"/status")
 			}
 		}
 	}
@@ -79,30 +79,30 @@ func Get_directorios(ruta string) []string {
 }
 
 /**
-Status returns the process status. Return value could be one of these. 
-R: Running S: Sleep T: Stop I: Idle Z: Zombie W: Wait L: Lock 
+Status returns the process status. Return value could be one of these.
+R: Running S: Sleep T: Stop I: Idle Z: Zombie W: Wait L: Lock
 The character is same within all supported platforms.
 */
 
-func GetStatus(caracter string) string{
-	if strings.Contains(caracter, "R") {
+func GetStatus(caracter string) string {
+	if caracter == "0" {
 		NumeroRun++
 		return "Running"
-	} else if strings.Contains(caracter, "S") {
-		NumeroSleep++
-		return "Sleep"
-	} else if strings.Contains(caracter, "T") {
-		NumeroStop++
-		return "Stop"
-	} else if strings.Contains(caracter, "I") {
-		return "Idle"
-	} else if strings.Contains(caracter, "Z") {
+	} else if caracter == "1" {
+		NumeroInterruptible++
+		return "Interruptible"
+	} else if caracter == "2" {
+		NumeroUninterruptible++
+		return "Uninterruptible"
+	} else if caracter == "3" {
 		NumeroZombie++
 		return "Zombie"
-	} else if strings.Contains(caracter, "W") {
-		return "Wait"
-	} else if strings.Contains(caracter, "L") {
-		return "Lock"
+	} else if caracter == "4" {
+		NumeroStop++
+		return "Stopped"
+	} else if caracter == "5" {
+		NumeroSwapping++
+		return "Swapping"
 	} else {
 		return "Error status"
 	}
@@ -110,7 +110,7 @@ func GetStatus(caracter string) string{
 
 func GetNombreUsuario(uid string) string {
 	var usuario string
-	cmd,error := exec.Command("grep", "x:"+uid, "/etc/passwd").Output()
+	cmd, error := exec.Command("grep", "x:"+uid, "/etc/passwd").Output()
 	if error != nil {
 		usuario = "---"
 		return usuario
@@ -119,14 +119,14 @@ func GetNombreUsuario(uid string) string {
 	return usuario
 }
 
-func MatarProceso(key string)  {
-	_,error := exec.Command("kill", "-15", key).Output()
+func MatarProceso(key string) {
+	_, error := exec.Command("kill", "-15", key).Output()
 	if error != nil {
 		panic(error)
 	}
 }
 
-func Insertar(raiz *Arbol, valor Arbol){
+func Insertar(raiz *Arbol, valor Arbol) {
 	if len(raiz.Hijos) == 0 {
 		if raiz.Pid == valor.Ppid {
 			raiz.Hijos = append(raiz.Hijos, valor)
@@ -150,7 +150,7 @@ func GetTextoArbol(raiz Arbol) string {
 	if len(raiz.Hijos) == 0 {
 		texto = texto + "<li>Pid:" + strconv.Itoa(raiz.Pid) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nombre:" + raiz.Nombre + "</li>\n"
 	} else {
-		for _,nodo := range raiz.Hijos {
+		for _, nodo := range raiz.Hijos {
 			if len(nodo.Hijos) == 0 {
 				texto = texto + "<li>Pid:" + strconv.Itoa(nodo.Pid) + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Nombre:" + nodo.Nombre + "</li>\n"
 			} else {
@@ -178,7 +178,7 @@ func GetPorcentajeRAM(uid string) string {
 
 	aux := strings.Split(string(cmd), "\n")[1]
 	aux = strings.Trim(aux, " ")
-	
+
 	porcentaje = strings.Split(aux, " ")[2]
 	return porcentaje
 }
@@ -187,8 +187,8 @@ func GetPorcentajeRAM(uid string) string {
 
 //Estructuras a utilizar
 type Arbol struct {
-	Pid int
+	Pid    int
 	Nombre string
-	Ppid int
-	Hijos []Arbol
+	Ppid   int
+	Hijos  []Arbol
 }

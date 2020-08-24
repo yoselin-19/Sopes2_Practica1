@@ -90,66 +90,11 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 }
 
 func lista_procesos(w http.ResponseWriter, r *http.Request) {
-//	var arr_process []PROCESS
-//	var cpu CPU
-	//Obteniendo lista de directorios
-//	var procesos []PROCESS
 	data, err := ioutil.ReadFile("/proc/cpu_grupo14")
 	if err != nil {
 		panic(err)
 	}
-	//
-	//fmt.Printf(string(dat))
-	procesos := gjson.Get(data, "cpu")
-	for _, proceso := range procesos.Array() {
-
-		Pid_ := gjson.Get(proceso.String(), "pid")
-                Pid_ = Pid_.String()
-
-	        Nombre_ := gjson.Get(proceso.String(), "nombre")
-                Nombre_ =  Nombre_.String()
-
-		Usuario_ := gjon.Get(proceso.String(), "
-                Usuario_ = strings.Replace(Usuario_, "\t", " ", -1)
-                Usuario_ = strings.Split(Usuario_, " ")[1] //En la posicion 0 hay un espacio en blanco " "
- 
-
-	}
-	os.Exit(1)
-/*	lista_directorios := librerias.Get_directorios("/proc")
-	//Recorriendo cada directorio
-	for _, dir := range lista_directorios {
-		informacion := librerias.Lectura_archivo(dir, 2)
-
-		//Obteniendo cada atributo
-		Pid_ := strings.Split(informacion[0], ":")[1]
-		Pid_ = strings.Replace(Pid_, "\t", "", -1)
-
-		Nombre_ := strings.Split(informacion[1], ":")[1]
-		Nombre_ = strings.Replace(Nombre_, "\t", "", -1)
-
-		Usuario_ := strings.Split(informacion[2], ":")[1]
-		Usuario_ = strings.Replace(Usuario_, "\t", " ", -1)
-		Usuario_ = strings.Split(Usuario_, " ")[1] //En la posicion 0 hay un espacio en blanco " "
-
-		Estado_ := strings.Split(informacion[3], ":")[1]
-		Estado_ = strings.Replace(Estado_, " ", "", -1)
-
-		Ppid_ := strings.Split(informacion[4], ":")[1]
-		Ppid_ = strings.Replace(Ppid_, "\t", "", -1)
-
-		info_process := PROCESS{
-			PID:           Pid_,
-			Nombre:        Nombre_,
-			Usuario:       librerias.GetNombreUsuario(Usuario_),
-			Estado:        librerias.GetStatus(Estado_),
-			PorcentajeRAM: librerias.GetPorcentajeRAM(Pid_),
-			Proceso_padre: Ppid_,
-		}
-
-		arr_process = append(arr_process, info_process)
-	}
-
+	readProcesos(data, "0")
 	//Agregando informacion general
 	info_general := Info_general{
 		Procesos_en_ejecucion: librerias.NumeroRun,
@@ -162,6 +107,43 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 
 	JSON_Data, _ := json.Marshal(info_general)
 	w.Write(JSON_Data)*/
+}
+
+func readProcesos(data string, padre string){
+
+	//
+	//fmt.Printf(string(dat))
+	procesos := gjson.Get(data, "cpu")
+	for _, proceso := range procesos.Array() {
+
+		Pid_ := gjson.Get(proceso.String(), "pid")
+        Pid_ = Pid_.String()
+
+	    Nombre_ := gjson.Get(proceso.String(), "nombre")
+        Nombre_ =  Nombre_.String()
+
+		Estado_ := gjson.Get(proceso.String(), "estado")
+		Estado_ = Estado_.String()
+
+		hijos := gjson.Get(name.String(), "hijos")
+
+		if(len(hijos.String()) > 0 ){
+			readProcesos(hijos.String(), Pid_)
+		}
+ 
+		info_process := PROCESS{
+			PID:           Pid_,
+			Nombre:        Nombre_,
+		//	Usuario:       librerias.GetNombreUsuario(Usuario_),
+			Usuario:	   "ubuntu"
+			Estado:        librerias.GetStatus(Estado_),
+			PorcentajeRAM: librerias.GetPorcentajeRAM(Pid_),
+			Proceso_padre: Ppid_,
+		}
+
+	}
+
+
 }
 
 func kill_proceso(w http.ResponseWriter, r *http.Request) {
