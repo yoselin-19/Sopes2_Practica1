@@ -28,7 +28,7 @@
     setInterval(update, intervalo * 1500)
     function update() {
       $.ajax({
-        url: "/PROCESS",
+        url: "http://35.232.161.193:3000/PROCESS",
         type: "get",
         success: function (json) {
           //Actualizo en el HTML

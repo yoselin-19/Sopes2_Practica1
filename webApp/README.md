@@ -14,4 +14,9 @@ Además permite mostrará la información básica de los procesos que se ejecuta
 ## Construir la imagen
 ---
     docker build -t monitor .
-    docker run -it -d -p 3000:3000 --name=webapp monitor
+    docker run -it -d -p 3000:3000 --name=MONITOR monitor
+
+## Para usar la imagen de docker hub
+---
+    docker pull yoseanne/monitor:[tag]
+    docker run -it -d -p 3000:3000 --name=MONITOR yoseanne/monitor:[tag]
