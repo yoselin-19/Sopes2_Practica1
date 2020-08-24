@@ -163,7 +163,7 @@ func armarProcesos(data string, padre string, arr_process []librerias.Arbol, rai
 		raiz = librerias.Arbol{
 			Pid:    PidNum,
 			Nombre: Nombre_.String(),
-			Ppid:   padre,
+			Ppid:   numero_padre,
 			Hijos:  nil,
 		}
 		arr_process = append(arr_process, raiz)
