@@ -139,13 +139,13 @@ func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 	return arr_process
 }
 
-func armarProcesos(data string, padre string, arr_process []PROCESS, raiz librerias.Arbol) []PROCESS {
+func armarProcesos(data string, padre string, arr_process []librerias.Arbol, raiz librerias.Arbol) []librerias.Arbol {
 
 	procesos := gjson.Get(data, "cpu")
 	for _, proceso := range procesos.Array() {
 
 		Pid_ := gjson.Get(proceso.String(), "pid")
-
+		PidNum, _ := strconv.Atoi(Pid_.String())
 		Nombre_ := gjson.Get(proceso.String(), "nombre")
 
 		Estado_ := gjson.Get(proceso.String(), "estado")
@@ -155,17 +155,17 @@ func armarProcesos(data string, padre string, arr_process []PROCESS, raiz librer
 		hijos := gjson.Get(proceso.String(), "hijos")
 
 		if strings.Contains(hijos.String(), "{") {
-			arr_process = readProcesos(hijos.String(), Pid_.String(), arr_process)
+			arr_process = readProcesos(hijos.String(), Pid_.String(), arr_process, raiz)
 		}
 
 		raiz = librerias.Arbol{
 			Pid:    PidNum,
-			Nombre: Nombre_,
-			Ppid:   PpidNum,
+			Nombre: Nombre_.String(),
+			Ppid:   padre,
 			Hijos:  nil,
 		}
-		arr_process = append(arr_process, info_process)
-		arreglo = append(arreglo, raiz)
+		arr_process = append(arr_process, raiz)
+
 	}
 	return arr_process
 }
