@@ -62,7 +62,6 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 	}
 
 	memoria_total := gjson.Get(string(data), "memoria_total_mb")
-	memoria_consumida := gjson.Get(string(data), "memoria_consumida_mb")
 	memoria_utilizada := gjson.Get(string(data), "memoria_utilizada_porcentaje")
 
 	//Conversiones y calculos
