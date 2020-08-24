@@ -130,10 +130,10 @@ func readProcesos(data string, padre string, arr_process []PROCESS) {
 		if len(hijos.String()) > 0 {
 			readProcesos(hijos.String(), Pid_.String(), arr_process)
 		}
-		Println(Pid_.String())
-		Println(Nombre_.String())
-		Println(Estado_.String())
-		Println(Usuario_.String())
+		fmt.Println(Pid_.String())
+		fmt.Println(Nombre_.String())
+		fmt.Println(Estado_.String())
+		fmt.Println(Usuario_.String())
 		info_process := PROCESS{
 			PID:           Pid_.String(),
 			Nombre:        Nombre_.String(),
