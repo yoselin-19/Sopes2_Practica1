@@ -185,7 +185,7 @@ func arbol_procesos(w http.ResponseWriter, r *http.Request) {
 	var arreglo []librerias.Arbol
 
 	//Recorriendo cada directorio
-	procesos := gjson.Get(data, "cpu")
+	procesos := gjson.Get(string(data), "cpu")
 	fmt.Println(reflect.TypeOf(procesos)) /*
 		arreglo = armarProcesos(procesos, "0", arreglo, raiz)
 
