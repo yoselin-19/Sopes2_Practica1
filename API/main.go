@@ -96,7 +96,8 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	readProcesos(data, "0")
+	readProcesos(data, "0", arr_process)
+
 	//Agregando informacion general
 	info_general := Info_general{
 		Procesos_en_ejecucion: librerias.NumeroRun,
@@ -117,13 +118,10 @@ func readProcesos(data []byte, padre string, arr_process []PROCESS) {
 	for _, proceso := range procesos.Array() {
 
 		Pid_ := gjson.Get(proceso.String(), "pid")
-		Pid_ = Pid_.String()
 
 		Nombre_ := gjson.Get(proceso.String(), "nombre")
-		Nombre_ = Nombre_.String()
 
 		Estado_ := gjson.Get(proceso.String(), "estado")
-		Estado_ = Estado_.String()
 
 		hijos := gjson.Get(name.String(), "hijos")
 
@@ -136,9 +134,9 @@ func readProcesos(data []byte, padre string, arr_process []PROCESS) {
 			Nombre: Nombre_.String(),
 			//	Usuario:       librerias.GetNombreUsuario(Usuario_),
 			Usuario:       "ubuntu",
-			Estado:        librerias.GetStatus(Estado_),
-			PorcentajeRAM: librerias.GetPorcentajeRAM(Pid_),
-			Proceso_padre: Ppid_.String(),
+			Estado:        librerias.GetStatus(Estado_.String()),
+			PorcentajeRAM: librerias.GetPorcentajeRAM(Pid_.String()),
+			Proceso_padre: padre.String(),
 		}
 		arr_process = append(arr_process, info_process)
 
