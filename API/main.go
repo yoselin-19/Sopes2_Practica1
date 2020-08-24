@@ -148,10 +148,6 @@ func armarProcesos(data string, padre string, arr_process []librerias.Arbol, rai
 		PidNum, _ := strconv.Atoi(Pid_.String())
 		Nombre_ := gjson.Get(proceso.String(), "nombre")
 
-		Estado_ := gjson.Get(proceso.String(), "estado")
-
-		Usuario_ := gjson.Get(proceso.String(), "usuario")
-
 		hijos := gjson.Get(proceso.String(), "hijos")
 
 		if strings.Contains(hijos.String(), "{") {
