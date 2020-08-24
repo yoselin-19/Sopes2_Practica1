@@ -128,14 +128,13 @@ func readProcesos(data string, padre string, arr_process []PROCESS) {
 		hijos := gjson.Get(proceso.String(), "hijos")
 
 		if len(hijos.String()) > 0 {
-			readProcesos(hijos, Pid_, arr_process)
+			readProcesos(string(hijos), Pid_.String(), arr_process)
 		}
 
 		info_process := PROCESS{
 			PID:           Pid_.String(),
 			Nombre:        Nombre_.String(),
 			Usuario:       librerias.GetNombreUsuario(Usuario_),
-			Usuario:       "ubuntu",
 			Estado:        librerias.GetStatus(Estado_.String()),
 			PorcentajeRAM: librerias.GetPorcentajeRAM(Pid_.String()),
 			Proceso_padre: padre,
