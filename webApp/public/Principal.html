@@ -59,7 +59,7 @@
               + "<td>" + arreglo_procesos[i].Usuario + "</td>"
               + "<td>" + arreglo_procesos[i].estado + "</td>"
               + "<td>" + arreglo_procesos[i].PorcentajeRAM + "</td>"
-              + "<td> <a href=\"/kill/" + arreglo_procesos[i].PID + "\" class= \"btn btn-danger\"> Eliminar </a></td>"
+              + "<td> <a href=\"/kill/" + arreglo_procesos[i].pid + "\" class= \"btn btn-danger\"> Eliminar </a></td>"
             "</tr>";
           }
           $("#tabla").html(cadena);
