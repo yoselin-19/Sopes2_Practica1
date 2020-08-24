@@ -90,7 +90,7 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	procesos := gjson.Get(data, "cpu")
+	procesos := gjson.Get(string(data), "cpu")
 	arr_process = readProcesos(procesos, "0", arr_process)
 
 	//Agregando informacion general
