@@ -70,7 +70,7 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 	MemTotal_ = MemTotal_ / 1000
 
 	MemUtilizada, _ := strconv.Atoi(memoria_utilizada.String())
-	MemFree_, _ := MemTotal_ + MemUtilizada
+	MemFree_ := MemTotal_ + MemUtilizada
 	MemFree_ = MemFree_ / 1000
 
 	MemConsumida := MemTotal_ - MemFree_
