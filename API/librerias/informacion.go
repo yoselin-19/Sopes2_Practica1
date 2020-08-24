@@ -2,6 +2,7 @@ package librerias
 
 import (
 	"bufio"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -163,6 +164,7 @@ func GetTextoArbol(raiz Arbol) string {
 		}
 	}
 	texto = texto + "</ul>\n"
+	fmt.Println(texto)
 	return texto
 }
 
