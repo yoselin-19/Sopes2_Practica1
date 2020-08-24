@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"sort"
+	"reflect"
 	"strconv"
 
 	//Para lectura de los archivos
@@ -139,8 +139,8 @@ func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 	return arr_process
 }
 
-func armarProcesos(procesos []byte, padre string, arr_process []librerias.Arbol, raiz librerias.Arbol) []librerias.Arbol {
-
+func armarProcesos(data string, padre string, arr_process []librerias.Arbol, raiz librerias.Arbol) []librerias.Arbol {
+	procesos := gjson.Get(data, "cpu")
 	for _, proceso := range procesos.Array() {
 
 		Pid_ := gjson.Get(proceso.String(), "pid")
@@ -186,24 +186,25 @@ func arbol_procesos(w http.ResponseWriter, r *http.Request) {
 
 	//Recorriendo cada directorio
 	procesos := gjson.Get(data, "cpu")
-	arreglo = armarProcesos(procesos, "0", arreglo, raiz)
+	fmt.Println(reflect.TypeOf(procesos)) /*
+		arreglo = armarProcesos(procesos, "0", arreglo, raiz)
 
-	// Sort by age, keeping original order or equal elements.
-	sort.SliceStable(arreglo, func(i, j int) bool {
-		return arreglo[i].Ppid < arreglo[j].Ppid
-	})
+		// Sort by age, keeping original order or equal elements.
+		sort.SliceStable(arreglo, func(i, j int) bool {
+			return arreglo[i].Ppid < arreglo[j].Ppid
+		})
 
-	//Construir texto de arbol
-	var nuevoB librerias.Arbol
-	for _, item := range arreglo {
-		librerias.Insertar(&nuevoB, item)
-	}
+		//Construir texto de arbol
+		var nuevoB librerias.Arbol
+		for _, item := range arreglo {
+			librerias.Insertar(&nuevoB, item)
+		}
 
-	TextoArbol := librerias.GetTextoArbol(nuevoB)
-	info_tree := Tree{Arbol: TextoArbol}
+		TextoArbol := librerias.GetTextoArbol(nuevoB)
+		info_tree := Tree{Arbol: TextoArbol}
 
-	JSON_Data, _ := json.Marshal(info_tree)
-	w.Write(JSON_Data)
+		JSON_Data, _ := json.Marshal(info_tree)
+		w.Write(JSON_Data)*/
 
 }
 
