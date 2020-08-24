@@ -127,13 +127,10 @@ func readProcesos(data string, padre string, arr_process []PROCESS) {
 
 		hijos := gjson.Get(proceso.String(), "hijos")
 
-		if len(hijos.String()) > 0 {
+		if strings.Contains(hijos.String(), "{") {
 			readProcesos(hijos.String(), Pid_.String(), arr_process)
 		}
-		fmt.Println(Pid_.String())
-		fmt.Println(Nombre_.String())
-		fmt.Println(Estado_.String())
-		fmt.Println(Usuario_.String())
+
 		info_process := PROCESS{
 			PID:           Pid_.String(),
 			Nombre:        Nombre_.String(),
