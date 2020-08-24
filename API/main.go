@@ -139,6 +139,7 @@ func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 	return arr_process
 }
 
+/*
 func armarProcesos(data string, padre string, arr_process []librerias.Arbol, raiz librerias.Arbol) []librerias.Arbol {
 	procesos := gjson.Get(data, "cpu")
 	for _, proceso := range procesos.Array() {
@@ -166,7 +167,7 @@ func armarProcesos(data string, padre string, arr_process []librerias.Arbol, rai
 	}
 	return arr_process
 }
-
+*/
 func kill_proceso(w http.ResponseWriter, r *http.Request) {
 	key := mux.Vars(r)["id"]
 	librerias.MatarProceso(key)
@@ -181,8 +182,8 @@ func arbol_procesos(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	//Variables para crear el arreglo de Arbol de procesos
-	var raiz librerias.Arbol
-	var arreglo []librerias.Arbol
+	//var raiz librerias.Arbol
+	//var arreglo []librerias.Arbol
 
 	//Recorriendo cada directorio
 	procesos := gjson.Get(string(data), "cpu")
