@@ -139,7 +139,7 @@ func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 	return arr_process
 }
 
-func armarProcesos(procesos string, padre string, arr_process []librerias.Arbol, raiz librerias.Arbol) []librerias.Arbol {
+func armarProcesos(procesos []byte, padre string, arr_process []librerias.Arbol, raiz librerias.Arbol) []librerias.Arbol {
 
 	for _, proceso := range procesos.Array() {
 
@@ -185,8 +185,8 @@ func arbol_procesos(w http.ResponseWriter, r *http.Request) {
 	var arreglo []librerias.Arbol
 
 	//Recorriendo cada directorio
-	procesos := gjson.Get(string(data), "cpu")
-	arreglo = armarProcesos(procesos.String(), "0", arreglo, raiz)
+	procesos := gjson.Get(data, "cpu")
+	arreglo = armarProcesos(procesos, "0", arreglo, raiz)
 
 	// Sort by age, keeping original order or equal elements.
 	sort.SliceStable(arreglo, func(i, j int) bool {
