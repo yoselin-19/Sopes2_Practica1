@@ -63,15 +63,13 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 
 	memoria_total := gjson.Get(string(data), "memoria_total_mb")
 	memoria_utilizada := gjson.Get(string(data), "memoria_utilizada_porcentaje")
-
+	memoria_consumida := gjson.Get(string(data), "memoria_consumida_mb")
 	//Conversiones y calculos
 	MemTotal_, _ := strconv.Atoi(memoria_total.String())
 
-	MemUtilizada, _ := strconv.Atoi(memoria_utilizada.String())
-	MemFree_ := MemTotal_ + MemUtilizada
+	MemConsumida, _ := strconv.Atoi(memoria_consumida.String())
 
-	MemConsumida := MemTotal_ - MemFree_
-	PorcentajeConsumo := (float32(MemConsumida) / float32(MemTotal_)) * 100
+	PorcentajeConsumo := float32(memoria_utilizada.String())
 
 	info_ram := RAM{
 		Total_Ram_Servidor:     MemTotal_,
