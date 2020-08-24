@@ -96,7 +96,7 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	readProcesos(str(data), "0", arr_process)
+	readProcesos(data, "0", arr_process)
 
 	//Agregando informacion general
 	info_general := Info_general{
