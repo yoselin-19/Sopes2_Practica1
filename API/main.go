@@ -96,7 +96,7 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	readProcesos(string(data), "0", arr_process)
+	arr_process = readProcesos(string(data), "0", arr_process)
 
 	//Agregando informacion general
 	info_general := Info_general{
@@ -112,7 +112,7 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	w.Write(JSON_Data)
 }
 
-func readProcesos(data string, padre string, arr_process []PROCESS) {
+func readProcesos(data string, padre string, arr_process []PROCESS) (arreglo_ []PROCESS) {
 
 	procesos := gjson.Get(data, "cpu")
 	for _, proceso := range procesos.Array() {
@@ -128,7 +128,7 @@ func readProcesos(data string, padre string, arr_process []PROCESS) {
 		hijos := gjson.Get(proceso.String(), "hijos")
 
 		if strings.Contains(hijos.String(), "{") {
-			readProcesos(hijos.String(), Pid_.String(), arr_process)
+			arr_process = readProcesos(hijos.String(), Pid_.String(), arr_process)
 		}
 
 		info_process := PROCESS{
@@ -142,7 +142,7 @@ func readProcesos(data string, padre string, arr_process []PROCESS) {
 		arr_process = append(arr_process, info_process)
 
 	}
-
+	return arr_process
 }
 
 func kill_proceso(w http.ResponseWriter, r *http.Request) {
