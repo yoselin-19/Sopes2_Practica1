@@ -112,7 +112,7 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	w.Write(JSON_Data)
 }
 
-func readProcesos(data string, padre string, arr_process []PROCESS) (arreglo_ []PROCESS) {
+func readProcesos(data string, padre string, arr_process []PROCESS) []PROCESS {
 
 	procesos := gjson.Get(data, "cpu")
 	for _, proceso := range procesos.Array() {
