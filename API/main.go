@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 
 	//Para lectura de los archivos
 	"strings"
@@ -14,7 +13,9 @@ import (
 
 	//Para usar json
 	"encoding/json"
+
 	"github.com/tidwall/gjson"
+
 	//Para conversiones
 
 	"strconv"
@@ -106,10 +107,10 @@ func lista_procesos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	JSON_Data, _ := json.Marshal(info_general)
-	w.Write(JSON_Data)*/
+	w.Write(JSON_Data)
 }
 
-func readProcesos(data string, padre string){
+func readProcesos(data string, padre string) {
 
 	//
 	//fmt.Printf(string(dat))
@@ -117,32 +118,31 @@ func readProcesos(data string, padre string){
 	for _, proceso := range procesos.Array() {
 
 		Pid_ := gjson.Get(proceso.String(), "pid")
-        Pid_ = Pid_.String()
+		Pid_ = Pid_.String()
 
-	    Nombre_ := gjson.Get(proceso.String(), "nombre")
-        Nombre_ =  Nombre_.String()
+		Nombre_ := gjson.Get(proceso.String(), "nombre")
+		Nombre_ = Nombre_.String()
 
 		Estado_ := gjson.Get(proceso.String(), "estado")
 		Estado_ = Estado_.String()
 
 		hijos := gjson.Get(name.String(), "hijos")
 
-		if(len(hijos.String()) > 0 ){
+		if len(hijos.String()) > 0 {
 			readProcesos(hijos.String(), Pid_)
 		}
- 
+
 		info_process := PROCESS{
-			PID:           Pid_,
-			Nombre:        Nombre_,
-		//	Usuario:       librerias.GetNombreUsuario(Usuario_),
-			Usuario:	   "ubuntu"
+			PID:    Pid_,
+			Nombre: Nombre_,
+			//	Usuario:       librerias.GetNombreUsuario(Usuario_),
+			Usuario:       "ubuntu",
 			Estado:        librerias.GetStatus(Estado_),
 			PorcentajeRAM: librerias.GetPorcentajeRAM(Pid_),
 			Proceso_padre: Ppid_,
 		}
 
 	}
-
 
 }
 
@@ -236,5 +236,5 @@ type Tree struct {
 }
 
 type CPU struct {
-	procesos []PROCESS 
+	procesos []PROCESS
 }
