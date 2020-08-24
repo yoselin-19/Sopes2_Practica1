@@ -54,10 +54,10 @@
           for (var i = 0; i < arreglo_procesos.length; i++) {
             cadena += "<tr>"
               + "<td>" + (i + 1) + "</td>"
-              + "<td>" + arreglo_procesos[i].PID + "</td>"
-              + "<td>" + arreglo_procesos[i].Nombre + "</td>"
+              + "<td>" + arreglo_procesos[i].pid + "</td>"
+              + "<td>" + arreglo_procesos[i].nombre + "</td>"
               + "<td>" + arreglo_procesos[i].Usuario + "</td>"
-              + "<td>" + arreglo_procesos[i].Estado + "</td>"
+              + "<td>" + arreglo_procesos[i].estado + "</td>"
               + "<td>" + arreglo_procesos[i].PorcentajeRAM + "</td>"
               + "<td> <a href=\"/kill/" + arreglo_procesos[i].PID + "\" class= \"btn btn-danger\"> Eliminar </a></td>"
             "</tr>";
