@@ -11,6 +11,7 @@
 #include <asm/uaccess.h> 
 #include <linux/hugetlb.h>
 #include <linux/sched/signal.h>
+#include <linux/uidgid.h>
 
 #define modulo_cpu "cpu_grupo14"
 
@@ -41,6 +42,7 @@ static int escribiendoArchivo(struct seq_file *mifile, void *v)
             seq_printf(mifile, "        {\n");
         }
         seq_printf(mifile, "        \"pid\" : %d,\n", task->pid);
+		seq_printf(mifile, "        \"uid\" : %d,\n", current_uid());
         seq_printf(mifile, "        \"nombre\" : \"%s\",\n", task->comm);
         seq_printf(mifile, "        \"estado\" : %ld,\n", task->state);
         seq_printf(mifile, "        \"hijos\" : [\n");
@@ -65,7 +67,7 @@ static int escribiendoArchivo(struct seq_file *mifile, void *v)
             contadorHijos++;
         }
         seq_printf(mifile, "\n");
-        seq_printf(mifile, "            ]\n");
+        seq_printf(mifile, "            ]\n");//es para terminar los hijos
         seq_printf(mifile, "        }");
 
         contadorPadre++;
@@ -105,3 +107,4 @@ static void terminandoCPU(void)
 
 module_init(iniciandoCPU);
 module_exit(terminandoCPU);
+
