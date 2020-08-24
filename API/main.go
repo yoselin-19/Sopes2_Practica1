@@ -69,7 +69,7 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 
 	MemConsumida, _ := strconv.Atoi(memoria_consumida.String())
 
-	numero_porcentaje, _ := strconv.Atoi(strmemoria_utilizada.String())
+	numero_porcentaje, _ := strconv.Atoi(memoria_utilizada.String())
 	PorcentajeConsumo := float32(numero_porcentaje)
 
 	info_ram := RAM{
