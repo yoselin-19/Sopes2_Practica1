@@ -131,11 +131,14 @@ func Insertar(raiz *Arbol, valor Arbol) {
 	if len(raiz.Hijos) == 0 {
 		if raiz.Pid == valor.Ppid {
 			raiz.Hijos = append(raiz.Hijos, valor)
-			fmt.Println(raiz.Hijos)
+			fmt.Println(string(raiz.Pid))
 		}
 	} else {
 		if raiz.Pid == valor.Ppid {
 			raiz.Hijos = append(raiz.Hijos, valor)
+			fmt.Println("hijos")
+			fmt.Println(string(raiz.Pid))
+			fmt.Println(string(valor.Ppid))
 		} else {
 			for i := 0; i < len(raiz.Hijos); i++ {
 				Insertar(&raiz.Hijos[i], valor)
