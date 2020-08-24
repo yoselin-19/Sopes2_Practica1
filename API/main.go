@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	//Para lectura de los archivos
 	"strings"
@@ -17,8 +18,6 @@ import (
 	"github.com/tidwall/gjson"
 
 	//Para conversiones
-
-	"strconv"
 
 	//Para hacer el api rest
 	"github.com/gorilla/mux"
@@ -57,28 +56,24 @@ func main() {
 }
 
 func memoria_proceso(w http.ResponseWriter, r *http.Request) {
-	informacion := librerias.Lectura_archivo("/proc/meminfo", 1)
-	MemTotal := informacion[0]
-	MemFree := informacion[1]
+	data, err := ioutil.ReadFile("/proc/mem_grupo14")
+	if err != nil {
+		panic(err)
+	}
 
-	//Haciendo Reemplazos para obtener los datos
-	MemTotal = strings.Replace(MemTotal, "MemTotal:", "", -1)
-	MemTotal = strings.Replace(MemTotal, " ", "", -1)
-	MemTotal = strings.Replace(MemTotal, "kB", "", -1)
-
-	MemFree = strings.Replace(MemFree, "MemFree:", "", -1)
-	MemFree = strings.Replace(MemFree, " ", "", -1)
-	MemFree = strings.Replace(MemFree, "kB", "", -1)
+	memoria_total := gjson.Get(string(data), "memoria_total_mb")
+	memoria_consumida := gjson.Get(string(data), "memoria_consumida_mb")
+	memoria_utilizada := gjson.Get(string(data), "memoria_utilizada_porcentaje")
 
 	//Conversiones y calculos
-	MemTotal_, _ := strconv.Atoi(MemTotal)
+	MemTotal_, _ := strconv.Atoi(memoria_total.String())
 	MemTotal_ = MemTotal_ / 1000
 
-	MemFree_, _ := strconv.Atoi(MemFree)
+	MemFree_, _ := strconv.Atoi(memoria_total.String()) + strconv.Atoi(memoria_utilizada.String())
 	MemFree_ = MemFree_ / 1000
 
 	MemConsumida := MemTotal_ - MemFree_
-	PorcentajeConsumo := (float32(MemConsumida) / float32(MemTotal_)) * 100
+	PorcentajeConsumo := strconv.Atoi(memoria_utilizada.String())
 
 	info_ram := RAM{
 		Total_Ram_Servidor:     MemTotal_,
@@ -88,6 +83,7 @@ func memoria_proceso(w http.ResponseWriter, r *http.Request) {
 
 	JSON_Data, _ := json.Marshal(info_ram)
 	w.Write(JSON_Data)
+
 }
 
 func lista_procesos(w http.ResponseWriter, r *http.Request) {
